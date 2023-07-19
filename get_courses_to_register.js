@@ -82,95 +82,36 @@ function get_courses_to_register(programmeId, studentCourses, programmeCourses, 
     // if programmeCourse not completed by the student and is available in the semester
     if (!studentCourses.includes(programmeCourses[i]) && semesterCourses.includes(programmeCourses[i])) {
 
-      // Get the prereqGroups 
+      // ---Check Prerequisites Satisfied---
+      
       for (j = 0; j < prerequisites.length; j++) {
-        // if programmee course has prereq for programme
+        // if programmeCourse has prereq for programme
         if (prerequisites[j].courseCode == programmeCourses[i] && prerequisites[j].programmeId == programmeId) {
           // get all groups of prerequisites 
           groupIds = prerequisites[j].groupId
         }
       }
 
-      // one group of prereqs to satisfy (groupIds[0])
-      if (groupIds.length == 1 ){ 
-        // if group is satisfied add course to the registerable list
-        if ( groupSatisfied(groupIds[0]) ){
-          registerableCourses.push(programmeCourses[i]);
-        }            
+      // If there are No Prerequisites
+      if(groupIds.length == 0){
+        registerableCourses.push(programmeCourses[i].courseCode);
       }
 
+      // Test If At Least One Group of Prereqs Satisfied
+      prereqSatisfied = atLeastOneGroupSatisfied(groupIds);
 
+      // // one group of prereqs to satisfy (groupIds[0])
+      // if (groupIds.length == 1 ){ 
+      //   // if group is satisfied add course to the registerable list
+      //   if ( groupSatisfied(groupIds[0]) ){
+      //     registerableCourses.push(programmeCourses[i]);
+      //   }            
+      // }
 
     }
-  }  // for i
-
-
-  //          // get prereq for progcourse in programme by programmeId
-  //            prereq = Prerequisite.findAll (courseCode: programmeCourse[i].courseCode , programmeId)
-
-  //          // if  prereqs exist for the programme course (not done by the student)
-  //            // NOTE: ?
-  //            //   if there is more than 1 prereq it is or, 
-  //            //   if one it is all in the group(and), 
-  //            //   if empty no prereqs for the course
-
-  //            //chatcode- figure out what this is doing
-  //             if (prereq.length === 0) {
-  //                // No prerequisites required, so add the course directly
-  //                registerableCourses.add(courseCode);
-  //            } else {
-  //                // Check if the student has fulfilled at least one group's prerequisites
-  //                let groupIds = new Set(prereq.map(item => item.groupId));
-  //                let fulfilledAtLeastOneGroup = false;
-
-  //                for (let groupId of groupIds) {
-  //                    let courseGroup = CourseGroup.findAll({ id: groupId });
-
-  //                    let prereqCourseCodes = new Set(courseGroup.map(item => item.prerequisiteCourseCode));
-  //                    if ([...prereqCourseCodes].every(course => studentCourses.includes(course))) {
-  //                        fulfilledAtLeastOneGroup = true;
-  //                        break;
-  //                    }
-  //                }
-
-  //                if (fulfilledAtLeastOneGroup) {
-  //                    registerableCourses.add(courseCode);
-  //                }
-  //            }
-
-
-
-  // //	      if( prereq ){
-  // //               // for each prereq
-  // //               for( j=0; j<prereq.length){
-  // //                  // help=-=-=-=-=-=-=-=-=-
-  // //                  // get course in the group associated with the groupId
-  // //		      courseGroup = CourseGroup.findAll (id: prereq[j].groupId)
-  // //		      if (courseGroup.courseCode in studentCourses){
-  // //                     registerableCourses.add(groupCourse);
-  // //                  }else{
-  // //                  }
-  // //               }
-  // //  		   // for each group
-  // //		   for( k=0; K< group.length){
-  // //		      //get the courses for each group
-  // //			group.courseCode
-  // //               }// for each group
-  // //	 	
-  // //             }// if
-
-  // //          }// if prereq
-
-  //         }// if
-
-  //     }// for programme course length	
-
-
-
-  //    Return list of remaining courses
-
-}//main
-
+  
+  }
+}
 
 
 const remainingCourses = get_courses_to_register(studentCourses, programmeCourses, semesterCourses);
