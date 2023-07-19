@@ -24,8 +24,8 @@
 
 const programmeId = 1;
 const studentCourses = ['COMP2606', 'COMP1601', 'FOUN1105'];
-const programmeCourses = ['COMP1601', 'FOUN1105', 'COMP2606', 'INFO3609', 'COMP3610'];
-const semesterCourses = ['COMP3610', 'COMP1601', 'FOUN1105', 'COMP2606', 'COMP1602', 'INFO3609'];
+const programmeCourses = ['COMP1601', 'FOUN1105', 'COMP2606', 'INFO3609', 'INFO3610'];
+const semesterCourses = ['INFO3610', 'COMP1601', 'FOUN1105', 'COMP2606', 'COMP1602', 'INFO3609'];
 
 const prerequisites = [
   { courseCode: "INFO3610", groupId: 2, programmeId: 1 },
@@ -100,7 +100,10 @@ function completedAntirequisites(courseCode){
   for( let i=0; i<antirequisites.length; i++){
     if( antirequisites[i].courseCode === courseCode){
       for( let j=0; j<studentCourses.length; j++){
-        if(studentCourses[j].courseCode === antirequisites[i].antirequisiteCourseCode){
+        if(studentCourses[j] === antirequisites[i].antirequisiteCourseCode){
+          // console.log("LOG::>" );
+          // console.log(" student course", studentCourses[j]);
+          // console.log(" antirequisite course", antirequisites[i].antirequisiteCourseCode);
           return true;
         }
       }
@@ -124,10 +127,10 @@ function get_courses_to_register(programmeId, studentCourses, programmeCourses, 
     if (!studentCourses.includes(programmeCourses[i]) && semesterCourses.includes(programmeCourses[i])) {
 
       // check if the student has satisfied the prereqs
-      prereqSatisfied = arePrerequisitesSatisfied(programmeCourses[i].courseCode, programmeId);
+      prereqSatisfied = arePrerequisitesSatisfied(programmeCourses[i], programmeId);
 
       // check if the student has done any anti-requisites
-      completedAntireq = completedAntirequisites(programmeCourses[i].courseCode);
+      completedAntireq = completedAntirequisites(programmeCourses[i]);
     
     }
 
