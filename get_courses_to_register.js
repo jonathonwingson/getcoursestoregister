@@ -42,14 +42,14 @@ const courseGroups = [
 ];
 
 // returns true if all courses in the group is in the student courses
-function groupSatisfied( groupId ){
+function groupSatisfied(groupId) {
 
   // checks for multiple courses in a group
-  for(let i=0; i<courseGroups.length; i++){
-    if( courseGroups[i].groupId == groupId){
+  for (let i = 0; i < courseGroups.length; i++) {
+    if (courseGroups[i].groupId === groupId) {
 
       // if the student does not satisfy the course
-      if( !studentCourses.includes( courseGroups[i].courseCode ) ){
+      if (!studentCourses.includes(courseGroups[i].courseCode)) {
 
         // since the student must satisfy all the courses in th group return false
         return false;
@@ -61,15 +61,38 @@ function groupSatisfied( groupId ){
   return true;
 }
 
-function atLeastOneGroupSatisfied( groupIds ){
-  for( const groupId of groupIds){
-    if(groupSatisfied(groupId)){
+// returns true if atleast one group of courses is in the student courses
+function atLeastOneGroupSatisfied(groupIds) {
+  for (const groupId of groupIds) {
+    if (groupSatisfied(groupId)) {
       return true;
     }
   }
   return false;
 }
 
+// checks if the prerequisites a course in a programme is satisfied  
+function arePrerequisitesSatisfied(courseCode, programmeId) {
+
+  for (j = 0; j < prerequisites.length; j++) {
+    // if course has prereq for programme
+    if (prerequisites[j].courseCode === courseCode && prerequisites[j].programmeId === programmeId) {
+      // get all groups of prerequisites 
+      groupIds.push(prerequisites[j].groupId); 
+    }
+  }
+
+  // if there are no groups return true OR if at least one group is satisfied return true
+  return groupIds.length ===0 || atLeastOneGroupSatisfied(groupIds);
+  
+}
+
+// checks if the student did any anti-requisites for the course
+function completedAntirequisites(courseCode){
+
+}
+
+// returns a list of courses the student can register for in the next semester
 function get_courses_to_register(programmeId, studentCourses, programmeCourses, semesterCourses, prerequisites, courseGroups) {
 
   let registerableCourses = [];
@@ -78,41 +101,21 @@ function get_courses_to_register(programmeId, studentCourses, programmeCourses, 
   for (i = 0; i < programmeCourses.length; i++) {
 
     let prereqSatisfied = false;
-    
+
     // if programmeCourse not completed by the student and is available in the semester
     if (!studentCourses.includes(programmeCourses[i]) && semesterCourses.includes(programmeCourses[i])) {
 
-      // ---Check Prerequisites Satisfied---
-      
-      for (j = 0; j < prerequisites.length; j++) {
-        // if programmeCourse has prereq for programme
-        if (prerequisites[j].courseCode == programmeCourses[i] && prerequisites[j].programmeId == programmeId) {
-          // get all groups of prerequisites 
-          groupIds = prerequisites[j].groupId
-        }
-      }
+      // check if the student has satisfied the prereqs
+      prereqSatisfied = arePrerequisitesSatisfied(programmeCourses[i].courseCode, programmeId);
 
-      // If there are No Prerequisites
-      if(groupIds.length == 0){
-        registerableCourses.push(programmeCourses[i].courseCode);
-      }
-
-      // Test If At Least One Group of Prereqs Satisfied
-      prereqSatisfied = atLeastOneGroupSatisfied(groupIds);
-
-      // // one group of prereqs to satisfy (groupIds[0])
-      // if (groupIds.length == 1 ){ 
-      //   // if group is satisfied add course to the registerable list
-      //   if ( groupSatisfied(groupIds[0]) ){
-      //     registerableCourses.push(programmeCourses[i]);
-      //   }            
-      // }
-
+      // check if the student has done any anti-requisites
+      completedAntireq = completedAntirequisites(programmeCourses[i].courseCode);
     }
-  
+
+    return registerableCourses;
   }
 }
 
 
-const remainingCourses = get_courses_to_register(studentCourses, programmeCourses, semesterCourses);
+const remainingCourses = get_courses_to_register(programmeId, studentCourses, programmeCourses, semesterCourses, prerequisites, courseGroups);
 console.log('Remaining courses:', remainingCourses);
