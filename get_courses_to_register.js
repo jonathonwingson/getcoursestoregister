@@ -39,17 +39,18 @@ const courseGroups = [
   { groupId: 3, courseCode: "COMP2603" },
   { groupId: 3, courseCode: "COMP2606" },
   { groupId: 4, courseCode: "INFO2600" },
-]
+];
 
 // returns true if all courses in the group is in the student courses
 function groupSatisfied( groupId ){
 
   // checks for multiple courses in a group
-  for( i=0; i<courseGroups.length; i++){
-    if( courseGroups[i].id == groupId){
-      // for each course in the group
+  for(let i=0; i<courseGroups.length; i++){
+    if( courseGroups[i].groupId == groupId){
+
       // if the student does not satisfy the course
-      if( !studentCourses.includes( courseGroups.courseCode ) ){
+      if( !studentCourses.includes( courseGroups[i].courseCode ) ){
+
         // since the student must satisfy all the courses in th group return false
         return false;
       }
@@ -60,6 +61,14 @@ function groupSatisfied( groupId ){
   return true;
 }
 
+function atLeastOneGroupSatisfied( groupIds ){
+  for( const groupId of groupIds){
+    if(groupSatisfied(groupId)){
+      return true;
+    }
+  }
+  return false;
+}
 
 function get_courses_to_register(programmeId, studentCourses, programmeCourses, semesterCourses, prerequisites, courseGroups) {
 
@@ -73,34 +82,22 @@ function get_courses_to_register(programmeId, studentCourses, programmeCourses, 
     // if programmeCourse not completed by the student and is available in the semester
     if (!studentCourses.includes(programmeCourses[i]) && semesterCourses.includes(programmeCourses[i])) {
 
-      // for each prereq
+      // Get the prereqGroups 
       for (j = 0; j < prerequisites.length; j++) {
-
         // if programmee course has prereq for programme
         if (prerequisites[j].courseCode == programmeCourses[i] && prerequisites[j].programmeId == programmeId) {
-
           // get all groups of prerequisites 
           groupIds = prerequisites[j].groupId
-
-          // for info3610 and progId 1: groupIds=(2,4)
-
-
-          // one group of prereqs to satisfy (groupIds[0])
-          if (groupIds.length == 1 ){ 
-            // if group is satisfied add course to the registerable list
-            if ( groupSatisfied(groupIds[0]) ){
-              registerableCourses.push(programmeCourses[i]);
-            }            
-          }
-            
-
         }
-        
-        // if no prereqs check for anti-reqs
-
       }
 
-
+      // one group of prereqs to satisfy (groupIds[0])
+      if (groupIds.length == 1 ){ 
+        // if group is satisfied add course to the registerable list
+        if ( groupSatisfied(groupIds[0]) ){
+          registerableCourses.push(programmeCourses[i]);
+        }            
+      }
 
 
 
